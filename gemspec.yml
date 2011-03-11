@@ -1,0 +1,12 @@
+name: bberg
+summary: "Bloomberg API wrapper for ruby"
+description: "Makes the Bloomberg Java API available from jruby - in ruby friendly manner."
+license: MIT
+authors: Patrik Sundberg
+email: patrik.sundberg@gmail.com
+homepage: http://rubygems.org/gems/bberg
+has_yard: true
+
+development_dependencies:
+  bundler: ~> 1.0.0
+  yard: ~> 0.6.0
