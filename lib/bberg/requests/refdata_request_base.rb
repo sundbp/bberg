@@ -1,15 +1,24 @@
 require 'bberg/bberg_exception'
 
 module Bberg
+  
+  # Module containing classes for the various bberg requests that can be made
   module Requests
-    
+
+    # Base class for reference data requests.
+    # Child classes implements particular requests, using features of this base class.
     class RefdataRequestBase
 
+      # raises exception, do not instantiate base class - only use child classes.
       def initialize
-        raise Bberg::BbergException.new "Trying to instantiate base class!"
+        raise Bberg::BbergException.new("Do not instantiate base class!")      
       end
       
-      def perform_request()
+      # Perform a synchronous reference data request.
+      # Calls (#create_request) to create the request object to send.
+      # Blocks while waiting for the response.
+      # @return [Hash] A parsed response in the form of a Hash.
+      def perform_request
         @session, @svc, @req_id = create_ref_data_service()
         
         create_request
@@ -24,21 +33,31 @@ module Bberg
         response
       end
 
+      # Create the reference data request to send to server.
+      # To be implemented by specialized child classes.
+      # Implementation on base class raises exception.
       def create_request
         raise Bberg::BbergException.new("Not implemented on base class!")
       end
 
+      # Retrieve response for this request.
+      # Will retrieve events from the request's session until an event of type REPONSE is found.
+      # For each event (partial or not) it will callse (#parse_response) and merge the hash
+      # returned into a cummulitative result.
+      # 
+      # Note: if you set the $DEBUG flag the unparsed event will be printed on STDOUT.
+      # @return [Hash] A parsed response in the form of a Hash.
       def retrieve_response
-        not_done = true
+        done = false
         result = Hash.new
-        while not_done
+        until done
           event = @session.nextEvent()
           case event.eventType().intValue()
           when Bberg::Native::Event::EventType::Constants::RESPONSE
             print_response_event(event) if $DEBUG
             event_result = parse_response(event)
             result = hash_merge_concat(result, event_result)
-            not_done = false
+            done = true
           when Bberg::Native::Event::EventType::Constants::PARTIAL_RESPONSE
             print_response_event(event) if $DEBUG
             event_result = parse_response(event)
@@ -50,6 +69,11 @@ module Bberg
         result
       end
       
+      # Parse response from server.
+      # Ideally this should convert the java response into a ruby friendly format.
+      # To be implemented by specialized child classes.
+      # Implementation on base class raises exception.
+      # @return [Hash] the information in the result parsed to Hash format.
       def parse_response(event)
         raise Bberg::BbergException.new("Not implemented in base class!")
       end
@@ -58,6 +82,9 @@ module Bberg
       
       protected
       
+      # Create a reference data service.
+      # This both creates and starts a session, and opens a refdata service.
+      # @return [Bberg::Native::Session, Object, Fixnum] session, service and request ID.
       def create_ref_data_service
         session = Bberg::Native::Session.new(@session_options)
         raise Bberg::BbergException.new("Could not start session!") unless session.start()
@@ -67,38 +94,59 @@ module Bberg
         [session, ref_data_service, request_id]
       end
       
-      def convert_value(value)
+      # Get correlation ID.
+      #
+      # NOTE: this needs to be updated so we have increasing unique IDs here.
+      # @return [Fixnum] correlation ID.
+      def get_correlation_id
+        # TODO: we need a mutex protected instance variable of increasing ID's to pass in here
+        Bberg::Native::CorrelationID.new(1)
+      end
+      
+      # Utility method to merge and concatenate two Hashes.
+      #
+      # This is useful for creating a cummulitative Hash result when reply consists of several events.
+      # @param [Hash] existing_hash what we have so far
+      # @param [Hash] new_hash partial result to add
+      # @return [Hash] merged and concatenated result
+      def hash_merge_concat(existing_hash, new_hash)
+        new_hash.each do |key, value|
+          if existing_hash.has_key? key
+            existing_hash[key] = existing_hash[key].concat(value)
+          else
+            existing_hash[key] = value
+          end
+        end
+        existing_hash
+      end
+      
+      # Utility method to convert a ruby values to their bberg format.
+      # 
+      # So far only time like types are affected.
+      def convert_value_to_bberg(value)
         if value.is_a? Date or value.is_a? DateTime or value.is_a? Time
           value.strftime("%Y%m%d")
         else
           value
         end
       end
-
-      def get_correlation_id
-        # TODO: we need a mutex protected instance variable of increasing ID's to pass in here
-        Bberg::Native::CorrelationID.new(1)
-      end
       
-      def hash_merge_concat(existing_res, new_res)
-        new_res.each do |key, value|
-          if existing_res.has_key? key
-            existing_res[key] = existing_res[key].concat(value)
-          else
-            existing_res[key] = value
-          end
-        end
-        existing_res
-      end
-      
-      def convert_to_time(dt)
+      # Convert a Java::ComBloomberglpBlpapi::Datetime to a ruby Time
+      # @return [Time] value as Time
+      def convert_to_rb_time(dt)
         hour = dt.hour == 24 ? 0 : dt.hour
         Time.local(dt.year, dt.month, dt.dayOfMonth, hour, dt.minute, dt.second, dt.milliSecond)
       end
       
-      def convert_to_date(d)
+      # Convert a Java::ComBloomberglpBlpapi::Datetime to a ruby Date
+      # @return [Date] value as Date
+      def convert_to_rb_date(d)
         Date.new(d.year, d.month, d.dayOfMonth)
       end
+      
+      ##################### PRIVATE ############################
+      
+      private
       
       def print_response_event(event)
         iter = event.messageIterator()

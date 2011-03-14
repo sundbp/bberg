@@ -5,6 +5,7 @@ require 'bberg/requests/refdata_request_base'
 module Bberg
   module Requests
     
+    # A class for preforming reference data requets.     
     class ReferenceDataRequest < RefdataRequestBase
     
       DEFAULT_OPTIONS = Hash[
@@ -13,6 +14,10 @@ module Bberg
         :returnEids => false
       ]
 
+      # Create new instance.
+      # @param [Bberg::Native::SessionOptions] session_options to specify how to connect session.
+      # @param [#each|String] identifiers a list of identifiers for this request
+      # @param [Hash] options_arg specification of what fields or other parameters to use for the request.
       def initialize(session_options, identifiers, options_arg = {})
         @session_options = session_options
         
@@ -25,6 +30,7 @@ module Bberg
         @options = DEFAULT_OPTIONS.merge(options_arg)
       end
 
+      # Create a reference data request.
       def create_request
         request = @svc.createRequest("ReferenceDataRequest")
 
@@ -32,7 +38,7 @@ module Bberg
         
         @options.each do |key, value|
           next if key == :fields or key == :overrides
-          request.set(key.to_s, convert_value(value))
+          request.set(key.to_s, convert_value_to_bberg(value))
         end
         
         @options[:fields].each {|f| request.append("fields", f) }
@@ -41,11 +47,13 @@ module Bberg
         @options[:overrides].each do |field_id, value|
           new_override = overrides.appendElement()
           new_override.setElement("fieldId", field_id.to_s)
-          new_override.setElement("value", convert_value(value))
+          new_override.setElement("value", convert_value_to_bberg(value))
         end
         @request = request
       end
       
+      # Parse event for ReferenceDataResponse.
+      # @return [Hash] event parsed into a Hash format.
       def parse_response(event)
         iter = event.messageIterator()
         result = Hash.new
@@ -112,7 +120,7 @@ module Bberg
           when  Bberg::Native::Schema::Datatype::Constants::FLOAT64
             e.getValueAsFloat64().to_f
           when Bberg::Native::Schema::Datatype::Constants::DATE
-            convert_to_date(e.getValueAsDate())
+            convert_to_rb_date(e.getValueAsDate())
           else
             raise Bberg::BbergException.new("Unsupported data type in response: #{e.datatype.to_s}")
           end

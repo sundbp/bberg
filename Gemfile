@@ -22,6 +22,7 @@ group :development do
   gem 'ci_reporter',  '~> 1.6.4'
   gem 'rcov',         '~> 0.9.9'
   gem 'flog',         '~> 2.5.0'
+  gem 'yardstick'
   # install separately so that we can do a bundle install --deployment --without development
   # when packaging to .exe
   #gem 'rawr',         :git => 'https://github.com/sundbp/rawr.git'

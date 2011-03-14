@@ -41,6 +41,8 @@ GEM
     thor (0.14.6)
     tzinfo (0.3.23)
     yard (0.6.4)
+    yardstick (0.2.0)
+      yard (~> 0.6.1)
 
 PLATFORMS
   java
@@ -59,3 +61,4 @@ DEPENDENCIES
   rspec (~> 2.5.0)
   tzinfo
   yard (~> 0.6.0)
+  yardstick

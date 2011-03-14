@@ -28,17 +28,27 @@ require 'rake'
 
 begin
   require 'rspec/core/rake_task'
+  RSpec::Core::RakeTask.new
+  
   require 'yard'
+  YARD::Rake::YardocTask.new
+
+  require 'yardstick/rake/measurement'
+  Yardstick::Rake::Measurement.new(:yardstick_measure) do |measurement|
+    measurement.output = 'measurement/report.txt'
+  end
+
+  require 'yardstick/rake/verify'
+  Yardstick::Rake::Verify.new do |verify|
+    verify.threshold = 80
+  end
+  
 rescue LoadError => e
   STDERR.puts e.message
   STDERR.puts "But we'll continue ahead in case you're trying to create a .exe file.."
 end
 
-RSpec::Core::RakeTask.new if defined?(RSpec)
-YARD::Rake::YardocTask.new if defined?(YARD)
-
 task :default => :spec
-
 namespace :bberg do
   desc "create a .exe file for the bberg drb server"
   task :create_exe => [:clean_for_exe, :download_jruby_jar, "rawr:bundle:exe"]
