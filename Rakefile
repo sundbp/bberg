@@ -29,6 +29,11 @@ require 'rake'
 begin
   require 'rspec/core/rake_task'
   RSpec::Core::RakeTask.new
+  desc "Run specs with rcov"
+  RSpec::Core::RakeTask.new("spec:rcov") do |t|
+    t.rcov = true
+    t.rcov_opts = %w{--exclude "spec"}
+  end
   
   require 'yard'
   YARD::Rake::YardocTask.new

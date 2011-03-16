@@ -1,6 +1,6 @@
 # bberg
 
-* [Homepage](http://rubygems.org/gems/bberg)
+* [Rubygems](http://rubygems.org/gems/bberg)
 * [Github](http://github.com/sundbp/bberg/)
 * [Issue tracker](http://github.com/sundbp/bberg/issues)
 
