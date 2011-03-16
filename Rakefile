@@ -1,6 +1,10 @@
 require 'rubygems'
 require 'fileutils'
 
+# for rcov threshold testing
+rcov_coverage_threshold = 90
+require_exact_rcov_threshold = false
+
 begin
   require 'rawr'
 rescue LoadError
@@ -32,7 +36,7 @@ begin
   desc "Run specs with rcov"
   RSpec::Core::RakeTask.new("spec:rcov") do |t|
     t.rcov = true
-    t.rcov_opts = %w{--exclude "spec,jsignal_internal"}
+    t.rcov_opts = %w{--exclude "spec\/,jsignal_internal"}
   end
   
   require 'yard'
@@ -90,4 +94,19 @@ namespace :bberg do
         end
       end    end
   end
+  
+  desc "Verify that rcov coverage is at least #{rcov_coverage_threshold}%"
+  task :verify_rcov => "spec:rcov" do
+    total_coverage = 0
+    File.open("coverage/index.html").each_line do |line|
+      if line =~ /<tt class='coverage_total'>\s*(\d+\.\d+)%\s*<\/tt>/
+        total_coverage = $1.to_f
+        break
+      end
+    end
+    puts "Coverage: #{total_coverage}% (threshold: #{rcov_coverage_threshold}%)"
+    raise "Coverage must be at least #{rcov_coverage_threshold}% but was #{total_coverage}%" if total_coverage < rcov_coverage_threshold
+    raise "Coverage has increased above the threshold of #{rcov_coverage_threshold}% to #{total_coverage}%. You should update your threshold value." if (total_coverage > threshold) and require_exact_rcov_threshold
+  end
+  
 end
