@@ -32,7 +32,7 @@ begin
   desc "Run specs with rcov"
   RSpec::Core::RakeTask.new("spec:rcov") do |t|
     t.rcov = true
-    t.rcov_opts = %w{--exclude "spec"}
+    t.rcov_opts = %w{--exclude "spec,jsignal_internal"}
   end
   
   require 'yard'
