@@ -36,13 +36,18 @@ the same machine (multiple machines not allowed by the Java API copyright, same 
 
     $ bberg_drb_server
 
-To create a stand alone executable do the following (after checking out the git repo):
+To create a stand alone executable do the following from a CMD prompt after checking out the 
+git repo (for example it does't work from within cygwin):
 
+    $ gem install rawr
     $ bundle install
     $ bundle install --deployment --without development
     $ rake bberg:create_exe
 
 This creates a folder with a .exe in ../bberg-package/windows/
+
+NOTE: you need rawr installed (outside of bundler) for this to work. We can't use
+rawr inside of bundler since we then get a copy of rawr among the vendor gems.
 
 ## Copyright
 
