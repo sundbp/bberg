@@ -1,6 +1,5 @@
 doc/
 pkg/
-.redcar/
 .bundle/
 vendor/bundle/
 vendor/java/
