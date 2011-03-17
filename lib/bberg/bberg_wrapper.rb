@@ -2,7 +2,7 @@ require 'java'
 
 module Bberg
 
-  # path to where the bloomberg java API jar can be found.
+  # path to where the bloomberg java API jar can be found
   # 
   # either uses the path in the env variable BBERG_JAVA_HOME
   #  or defaults to 'C:/blp/API/APIv3/JavaAPI/v3.3.3.3/lib'

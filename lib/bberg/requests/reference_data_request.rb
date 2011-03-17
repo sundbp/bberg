@@ -5,19 +5,21 @@ require 'bberg/requests/refdata_request_base'
 module Bberg
   module Requests
     
-    # A class for preforming reference data requets.     
+    # A class for preforming reference data requets
     class ReferenceDataRequest < RefdataRequestBase
     
+      # Defaults for reference data requests
       DEFAULT_OPTIONS = Hash[
         :fields => ["PX_SETTLE"],
         :useUTCTime => true,
         :returnEids => false
       ]
 
-      # Create new instance.
-      # @param [Bberg::Native::SessionOptions] session_options to specify how to connect session.
+      # Create new instance
+      #
+      # @param [Bberg::Native::SessionOptions] session_options to specify how to connect session
       # @param [#each|String] identifiers a list of identifiers for this request
-      # @param [Hash] options_arg specification of what fields or other parameters to use for the request.
+      # @param [Hash] options_arg specification of what fields or other parameters to use for the request
       def initialize(session_options, identifiers, options_arg = {})
         @session_options = session_options
         
@@ -30,7 +32,9 @@ module Bberg
         @options = DEFAULT_OPTIONS.merge(options_arg)
       end
 
-      # Create a reference data request.
+      # Create a reference data request
+      # 
+      # @return A bberg request object
       def create_request
         request = @svc.createRequest("ReferenceDataRequest")
 
@@ -52,8 +56,9 @@ module Bberg
         @request = request
       end
       
-      # Parse event for ReferenceDataResponse.
-      # @return [Hash] event parsed into a Hash format.
+      # Parse event for ReferenceDataResponse
+      #
+      # @return [Hash] event parsed into a Hash format
       def parse_response(event)
         iter = event.messageIterator()
         result = Hash.new

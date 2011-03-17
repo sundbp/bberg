@@ -4,20 +4,21 @@ require 'bberg/requests/refdata_request_base'
 module Bberg
   module Requests
     
-    # A class for preforming historical data requets. 
+    # A class for preforming historical data requets 
     class HistoricalDataRequest < RefdataRequestBase
     
+      # Defaults for historical data requests
       DEFAULT_OPTIONS = Hash[
         :fields => ["PX_SETTLE"],
         :frequency => "DAILY"
       ]
 
-      # Create new instance.
-      # @param [Bberg::Native::SessionOptions] session_options to specify how to connect session.
+      # Create new instance
+      # @param [Bberg::Native::SessionOptions] session_options to specify how to connect session
       # @param [#each|String] identifiers a list of identifiers for this request
       # @param [Time] start_time start of historical range
       # @param [Time] end_time end of historical range
-      # @param [Hash] options_arg specification of what fields or other parameters to use for the request.
+      # @param [Hash] options_arg specification of what fields or other parameters to use for the request
       def initialize(session_options, identifiers, start_time, end_time, options_arg = {})
         @session_options = session_options
         
@@ -33,7 +34,8 @@ module Bberg
         @options = DEFAULT_OPTIONS.merge(options_arg)
       end
       
-      # Create a historical data request.
+      # Create a historical data request
+      # @return A bberg request object
       def create_request
         request = @svc.createRequest("HistoricalDataRequest")
         request.set("startDate", @start_time.strftime("%Y%m%d"))
@@ -45,8 +47,8 @@ module Bberg
         @request = request
       end
       
-      # Parse event for HistoricalDataResponse.
-      # @return [Hash] event parsed into a Hash format.
+      # Parse event for HistoricalDataResponse
+      # @return [Hash] event parsed into a Hash format
       def parse_response(event)
         iter = event.messageIterator()
         result = Hash.new
@@ -75,6 +77,13 @@ module Bberg
       
       private
       
+      # Read bberg field elements into Hash
+      # 
+      # Convert values into more natural ruby types
+      #
+      # @param field_data the bberg field data
+      # @param [Fixnum] field_num the number of the field to fetch
+      # @return [Hash] the field element converted to a Hash of ruby values
       def get_field_values(field_data, field_num)
         element = field_data.getValueAsElement(field_num)
         timestamp = convert_to_rb_time(element.getElementAsDatetime("date"))
