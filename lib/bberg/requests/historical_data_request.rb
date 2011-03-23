@@ -1,11 +1,12 @@
 require 'bberg/bberg_exception'
-require 'bberg/requests/refdata_request_base'
+require 'bberg/requests/refdata_request'
 
 module Bberg
   module Requests
     
     # A class for preforming historical data requets 
-    class HistoricalDataRequest < RefdataRequestBase
+    class HistoricalDataRequest
+      include RefdataRequest
     
       # Defaults for historical data requests
       DEFAULT_OPTIONS = Hash[

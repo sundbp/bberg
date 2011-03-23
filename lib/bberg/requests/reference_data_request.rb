@@ -1,12 +1,13 @@
 require 'date'
 require 'bberg/bberg_exception'
-require 'bberg/requests/refdata_request_base'
+require 'bberg/requests/refdata_request'
 
 module Bberg
   module Requests
     
     # A class for preforming reference data requets
-    class ReferenceDataRequest < RefdataRequestBase
+    class ReferenceDataRequest
+      include RefdataRequest
     
       # Defaults for reference data requests
       DEFAULT_OPTIONS = Hash[

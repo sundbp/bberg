@@ -5,16 +5,12 @@ module Bberg
   # Module containing classes for the various bberg requests that can be made
   module Requests
 
-    # Base class for reference data requests
+    # Mixin for reference data requests
     # 
-    # Child classes implements particular requests, using features of this base class
-    class RefdataRequestBase
+    # This relies on particular requests implementing #create_request and
+    # #parse_response
+    module RefdataRequest
 
-      # raises exception, do not instantiate base class - only use child classes
-      def initialize
-        raise Bberg::BbergException.new("Do not instantiate base class!")      
-      end
-      
       # Perform a synchronous reference data request
       # 
       # Calls (#create_request) to create the request object to send.
@@ -34,16 +30,6 @@ module Bberg
         @session = nil
         
         response
-      end
-
-      # Create the reference data request to send to server
-      #
-      # To be implemented by specialized child classes.
-      # Implementation on base class raises exception
-      #
-      # @return A bberg request object
-      def create_request
-        raise Bberg::BbergException.new("Not implemented on base class!")
       end
 
       # Retrieve response for this request
@@ -77,20 +63,9 @@ module Bberg
         result
       end
       
-      # Parse response from server
-      # 
-      # Ideally this should convert the java response into a ruby friendly format.
-      # To be implemented by specialized child classes.
-      # Implementation on base class raises exception.
-      #
-      # @return [Hash] the information in the result parsed to Hash format
-      def parse_response(event)
-        raise Bberg::BbergException.new("Not implemented in base class!")
-      end
-      
       ##################### PROTECTED ############################
       
-      protected
+      private
       
       # Create a reference data service
       #
@@ -161,11 +136,7 @@ module Bberg
       def convert_to_rb_date(d)
         Date.new(d.year, d.month, d.dayOfMonth)
       end
-      
-      ##################### PRIVATE ############################
-      
-      private
-      
+            
       def print_response_event(event)
         iter = event.messageIterator()
         while iter.hasNext()
