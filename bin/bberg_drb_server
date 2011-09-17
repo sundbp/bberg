@@ -1,3 +1,4 @@
 #!/usr/bin/env ruby
 require 'rubygems'
+require 'bundler/setup'
 require 'bberg/drb_server'

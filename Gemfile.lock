@@ -1,3 +1,8 @@
+PATH
+  remote: .
+  specs:
+    bberg (0.1.0)
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -49,6 +54,8 @@ PLATFORMS
 
 DEPENDENCIES
   activesupport
+  bberg!
+  bundler (~> 1.0.0)
   ci_reporter (~> 1.6.4)
   flog (~> 2.5.0)
   guard (~> 0.3.0)

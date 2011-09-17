@@ -1,6 +1,6 @@
 source :rubygems
 
-#gemspec
+gemspec
 
 gem 'activesupport'
 gem 'i18n'
